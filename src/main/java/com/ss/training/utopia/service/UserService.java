@@ -76,6 +76,19 @@ public class UserService {
         return user.get();
     }
 
+    /**
+     * Get users by Role ID
+     * @param roleId role to search by
+     * @return list of users under a role
+     */
+    public List<User> getUsersByRole(Integer roleId) {
+        Optional<Role> role = rdao.findById(roleId);
+        if (role.isEmpty())
+            throw new SQLDoesNotExistException("Role", String.valueOf(roleId));
+        return dao.findAll(Example.of(User.builder()
+        .role(role.get()).build()));
+    }
+
 
     /**
      * Insert new user

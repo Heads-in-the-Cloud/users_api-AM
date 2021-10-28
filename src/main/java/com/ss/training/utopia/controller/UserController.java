@@ -26,6 +26,12 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/role/{roleId}")
+    public ResponseEntity<List<User>> getUsersByRole(@PathVariable int roleId) {
+        List<User> users = service.getUsersByRole(roleId);
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         return ResponseEntity.of(Optional.ofNullable(service.getUserById(id)));

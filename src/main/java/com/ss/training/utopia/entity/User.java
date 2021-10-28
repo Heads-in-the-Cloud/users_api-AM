@@ -14,8 +14,10 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name="user")
 public class User {
+
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
