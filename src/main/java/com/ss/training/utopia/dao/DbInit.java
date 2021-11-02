@@ -32,25 +32,18 @@ public class DbInit implements CommandLineRunner {
         Optional<Role> adminOpt = rdao.findByRoleName("ADMIN");
         Optional<Role> agentOpt = rdao.findByRoleName("AGENT");
         Optional<Role> userOpt = rdao.findByRoleName("USER");
-        Role role;
+        Role admin;
         // admin
         if (adminOpt.isEmpty())
-            role = Role.builder().id(3).roleName("ADMIN").build();
+            admin = rdao.save(Role.builder().id(3).roleName("ADMIN").build());
         else
-            role = adminOpt.get();
-        Role admin = rdao.save(role);
+            admin = adminOpt.get();
         // agent
         if (agentOpt.isEmpty())
-            role = Role.builder().id(2).roleName("AGENT").build();
-        else
-            role = agentOpt.get();
-        rdao.save(role);
+            rdao.save(Role.builder().id(2).roleName("AGENT").build());
         // user
         if (userOpt.isEmpty())
-            role = Role.builder().id(1).roleName("USER").build();
-        else
-            role = userOpt.get();
-        rdao.save(role);
+            rdao.save(Role.builder().id(1).roleName("USER").build());
 
         // ensure admin user exists
         if (!dao.existsByEmail("admin@foo.bar")) {
@@ -62,7 +55,7 @@ public class DbInit implements CommandLineRunner {
                 .username("admin")
                 .password(passwordEncoder.encode("pass"))
                 .phone("+1 (800) 888-8888")
-                .role(role)
+                .role(admin)
                 .build();
             dao.save(adminCreate);
         }

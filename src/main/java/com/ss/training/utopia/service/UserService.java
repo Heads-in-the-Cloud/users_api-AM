@@ -101,7 +101,7 @@ public class UserService {
      */
     public User add(UserDto insert) {
         User user = dtoToEntity(insert);
-        if (dao.exists(Example.of(user)))
+        if (dao.existsByEmailOrUsernameOrPhone(user.getEmail(), user.getUsername(), user.getPhone()))
             throw new SQLAlreadyExistsException("User", user.getId() != null ? String.valueOf(user.getId()) : "none");
         return dao.save(user);
     }
@@ -109,7 +109,7 @@ public class UserService {
 
     /**
      * Insert users from a list (single request)
-     * Fails if there are any duplicate email/username/phones
+     * Population only - no return values, requires admin
      * @param insert list of DTOs to insert
      */
     @Transactional
