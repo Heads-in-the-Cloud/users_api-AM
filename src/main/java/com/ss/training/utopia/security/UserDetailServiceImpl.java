@@ -1,8 +1,7 @@
-package com.ss.training.utopia.service;
+package com.ss.training.utopia.security;
 
 import com.ss.training.utopia.dao.UserDao;
 import com.ss.training.utopia.entity.User;
-import com.ss.training.utopia.entity.UserDetailsImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

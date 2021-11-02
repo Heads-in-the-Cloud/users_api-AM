@@ -7,9 +7,12 @@ import com.ss.training.utopia.dao.UserDao;
 import com.ss.training.utopia.dto.UserDto;
 import com.ss.training.utopia.entity.Role;
 import com.ss.training.utopia.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +54,7 @@ public class UserService {
             .password(dto.getPassword())
             .email(dto.getEmail())
             .phone(dto.getPhone())
+            .active(true)
             .build();
     }
 
@@ -100,6 +104,22 @@ public class UserService {
         if (dao.exists(Example.of(user)))
             throw new SQLAlreadyExistsException("User", user.getId() != null ? String.valueOf(user.getId()) : "none");
         return dao.save(user);
+    }
+
+
+    /**
+     * Insert users from a list (single request)
+     * Fails if there are any duplicate email/username/phones
+     * @param insert list of DTOs to insert
+     */
+    @Transactional
+    public void addList(List<UserDto> insert) {
+        for (UserDto dto : insert) {
+            User user = dtoToEntity(dto);
+            // filter users who already satisfy uniqueness requirements
+            if (!dao.existsByEmailOrUsernameOrPhone(user.getEmail(), user.getUsername(), user.getPhone()))
+                dao.save(user);
+        }
     }
 
 

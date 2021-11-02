@@ -77,7 +77,7 @@ public class RoleService {
      */
     public Role add(RoleDto insert) {
         Role role = dtoToEntity(insert);
-        if (dao.exists(Example.of(role)))
+        if (dao.existsById(role.getId()))
             throw new SQLAlreadyExistsException("Role", role.getId() != null ? String.valueOf(role.getId()) : "none");
         return dao.save(role);
     }

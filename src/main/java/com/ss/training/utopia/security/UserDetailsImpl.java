@@ -1,5 +1,6 @@
-package com.ss.training.utopia.entity;
+package com.ss.training.utopia.security;
 
+import com.ss.training.utopia.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
