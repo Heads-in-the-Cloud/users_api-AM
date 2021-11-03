@@ -7,12 +7,11 @@ import com.ss.training.utopia.dao.UserDao;
 import com.ss.training.utopia.dto.UserDto;
 import com.ss.training.utopia.entity.Role;
 import com.ss.training.utopia.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,14 +21,17 @@ public class UserService {
     // vars
     private final UserDao dao;
     private final RoleDao rdao;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Constructor
      * @param dao dao to use for Users
+     * @param passwordEncoder used to encode passwords
      */
-    public UserService(UserDao dao, RoleDao rdao) {
+    public UserService(UserDao dao, RoleDao rdao, PasswordEncoder passwordEncoder) {
         this.dao = dao;
         this.rdao = rdao;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -51,7 +53,7 @@ public class UserService {
             .givenName(dto.getGivenName())
             .familyName(dto.getFamilyName())
             .username(dto.getUsername())
-            .password(dto.getPassword())
+            .password(passwordEncoder.encode(dto.getPassword()))
             .email(dto.getEmail())
             .phone(dto.getPhone())
             .active(true)
