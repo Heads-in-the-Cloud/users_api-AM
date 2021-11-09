@@ -6,6 +6,7 @@ import com.ss.training.utopia.service.RoleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,7 @@ public class RoleController {
     }
 
     @GetMapping
+    @RolesAllowed({"ADMIN"})
     public ResponseEntity<List<Role>> getAllRoles() {
         List<Role> roles = service.getAll();
         return ResponseEntity.ok(roles);
