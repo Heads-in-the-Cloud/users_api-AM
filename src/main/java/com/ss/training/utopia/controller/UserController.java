@@ -7,11 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@CrossOrigin
 public class UserController {
 
     // construction
@@ -42,6 +44,12 @@ public class UserController {
         User user = service.add(dto);
         URI uri = URI.create("/api/v1/users/" + user.getId());
         return ResponseEntity.created(uri).body(user);
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity<List<User>> addUsers(@RequestBody List<UserDto> dtos) {
+        service.addList(dtos);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

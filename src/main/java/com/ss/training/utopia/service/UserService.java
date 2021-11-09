@@ -8,8 +8,10 @@ import com.ss.training.utopia.dto.UserDto;
 import com.ss.training.utopia.entity.Role;
 import com.ss.training.utopia.entity.User;
 import org.springframework.data.domain.Example;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,14 +21,17 @@ public class UserService {
     // vars
     private final UserDao dao;
     private final RoleDao rdao;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Constructor
      * @param dao dao to use for Users
+     * @param passwordEncoder used to encode passwords
      */
-    public UserService(UserDao dao, RoleDao rdao) {
+    public UserService(UserDao dao, RoleDao rdao, PasswordEncoder passwordEncoder) {
         this.dao = dao;
         this.rdao = rdao;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -48,9 +53,10 @@ public class UserService {
             .givenName(dto.getGivenName())
             .familyName(dto.getFamilyName())
             .username(dto.getUsername())
-            .password(dto.getPassword())
+            .password(passwordEncoder.encode(dto.getPassword()))
             .email(dto.getEmail())
             .phone(dto.getPhone())
+            .active(true)
             .build();
     }
 
@@ -97,9 +103,25 @@ public class UserService {
      */
     public User add(UserDto insert) {
         User user = dtoToEntity(insert);
-        if (dao.exists(Example.of(user)))
+        if (dao.existsByEmailOrUsernameOrPhone(user.getEmail(), user.getUsername(), user.getPhone()))
             throw new SQLAlreadyExistsException("User", user.getId() != null ? String.valueOf(user.getId()) : "none");
         return dao.save(user);
+    }
+
+
+    /**
+     * Insert users from a list (single request)
+     * Population only - no return values, requires admin
+     * @param insert list of DTOs to insert
+     */
+    @Transactional
+    public void addList(List<UserDto> insert) {
+        for (UserDto dto : insert) {
+            User user = dtoToEntity(dto);
+            // filter users who already satisfy uniqueness requirements
+            if (!dao.existsByEmailOrUsernameOrPhone(user.getEmail(), user.getUsername(), user.getPhone()))
+                dao.save(user);
+        }
     }
 
 
