@@ -20,12 +20,5 @@ pipeline {
                 echo 'Run container and test'
             }
         }
-        stage('Clean') {
-            steps {
-                echo 'Removing created resources'
-                sh 'docker images'
-                sh 'docker rmi users-api-am'
-            }
-        }
     }
 }
