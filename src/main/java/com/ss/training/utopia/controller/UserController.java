@@ -22,6 +22,11 @@ public class UserController {
         this.service = service;
     }
 
+    @GetMapping("/status")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("Healthy");
+    }
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = service.getAll();
