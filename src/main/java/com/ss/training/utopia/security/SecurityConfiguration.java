@@ -28,7 +28,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             // authorize
             .authorizeRequests()
-            .antMatchers("/api/v1/users/**").authenticated();
+            .antMatchers("/api/v1/users/status").permitAll()
+            .antMatchers("/**").authenticated();
     }
 
     @Bean
