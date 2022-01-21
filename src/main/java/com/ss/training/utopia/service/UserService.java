@@ -56,7 +56,6 @@ public class UserService {
             .password(passwordEncoder.encode(dto.getPassword()))
             .email(dto.getEmail())
             .phone(dto.getPhone())
-            .active(true)
             .build();
     }
 

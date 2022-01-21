@@ -46,8 +46,6 @@ public class User {
     @Column(name="phone")
     private String phone;
 
-    private Boolean active;
-
     private String permissions;
 
     public List<String> getPermissionsAsList() {
