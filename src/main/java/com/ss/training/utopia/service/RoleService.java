@@ -1,7 +1,7 @@
 package com.ss.training.utopia.service;
 
-import com.ss.training.utopia.Exception.SQLAlreadyExistsException;
-import com.ss.training.utopia.Exception.SQLDoesNotExistException;
+import com.ss.training.utopia.exception.SQLAlreadyExistsException;
+import com.ss.training.utopia.exception.SQLDoesNotExistException;
 import com.ss.training.utopia.dao.RoleDao;
 import com.ss.training.utopia.dto.RoleDto;
 import com.ss.training.utopia.entity.Role;
