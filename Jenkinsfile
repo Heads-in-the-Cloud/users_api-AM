@@ -42,7 +42,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Docker image'
-                sh 'docker build --build-arg JARFILE_NAME=${JARFILE_NAME} -t ${API_REPO_NAME} .'
+                sh 'docker build --build-arg jar_name=${JARFILE_NAME} -t ${API_REPO_NAME} .'
             }
         }
         stage('Push Images') {
