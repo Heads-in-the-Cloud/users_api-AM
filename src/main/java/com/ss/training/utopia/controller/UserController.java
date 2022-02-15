@@ -22,7 +22,7 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping("/status")
+    @GetMapping("/ready")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("Healthy");
     }

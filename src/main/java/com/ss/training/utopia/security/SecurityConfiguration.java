@@ -28,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             // authorize
             .authorizeRequests()
-            .antMatchers("/api/v1/users/status").permitAll()
+            .antMatchers("/api/v1/users/ready").permitAll()
             .antMatchers("/**").authenticated();
     }
 
