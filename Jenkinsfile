@@ -80,7 +80,7 @@ pipeline {
                     def jsonObj = readJSON text: secret
 
                     // update secret
-                    jsonObj.FLIGHTS_API_LATEST = env.COMMIT_HASH
+                    jsonObj.USERS_API_LATEST = env.COMMIT_HASH
 
                     // push secret
                     String jsonOut = writeJSON returnText: true, json: jsonObj
