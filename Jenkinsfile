@@ -2,10 +2,15 @@ pipeline {
     agent { label 'aws-ready' }
 
     environment {
-        COMMIT_HASH = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
-        API_REPO_NAME = 'am-users-api'
-        JARFILE_NAME = 'utopia-0.0.1-SNAPSHOT.jar'
-        SONARQUBE_ID = tool name: 'SonarQubeScanner-4.6.2'
+        // General
+        COMMIT_HASH     = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
+        API_REPO_NAME   = 'am-users-api'
+        JARFILE_NAME    = 'utopia-0.0.1-SNAPSHOT.jar'
+        SONARQUBE_ID    = tool name: 'SonarQubeScanner-4.6.2'
+
+        // AWS Specific
+        AWS_PROFILE     = "${AWS_PROFILE_NAME}"
+        SECRET_ID_PUSH  = "${AM_SECRET_ID_PUSH}"
     }
 
     stages {
@@ -33,7 +38,7 @@ pipeline {
                        -Dsonar.java.binaries=./target/classes/com/ss/training/utopia
                     """
                 }
-                timeout(time: 15, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') {
                     sleep(10)
                     waitForQualityGate abortPipeline: true
                 }
@@ -63,13 +68,27 @@ pipeline {
                 sh 'docker rmi ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION_ID}.amazonaws.com/${API_REPO_NAME}:${COMMIT_HASH}'
             }
         }
-        stage('ECS Update') {
+        stage('EKS Update') {
             steps {
-                echo 'Attempting to update ECS Deployment data'
-                dir("${AM_RESOURCES_DIRECTORY}") {
-                    sh 'jq -M --arg commit "${COMMIT_HASH}" \'.users=$commit\' images-${AWS_REGION_ID}.json > tmp.$$.json && mv tmp.$$.json images-${AWS_REGION_ID}.json'
+                echo 'Configuring Profile and Region'
+                sh 'aws configure set region ${AWS_REGION_ID} --profile ${AWS_PROFILE_NAME}'
+
+                echo 'Writing output to Secrets'
+                script {
+                    // get secret
+                    secret = sh(returnStdout: true, script: 'aws secretsmanager get-secret-value --secret-id ${AM_SECRET_ID} | jq -Mr \'.SecretString\'').trim()
+                    def jsonObj = readJSON text: secret
+
+                    // update secret
+                    jsonObj.FLIGHTS_API_LATEST = env.COMMIT_HASH
+
+                    // push secret
+                    String jsonOut = writeJSON returnText: true, json: jsonObj
+                    sh "aws secretsmanager update-secret --secret-id 'arn:aws:secretsmanager:${AWS_REGION_ID}:${AWS_ACCOUNT_ID}:secret:${SECRET_ID_PUSH}' --region ${AWS_REGION_ID} --secret-string '${jsonOut}'"
                 }
             }
         }
+
+        // end stages
     }
 }
