@@ -23,6 +23,8 @@ public class UserService {
     private final RoleDao rdao;
     private final PasswordEncoder passwordEncoder;
 
+    private final String roleResourceName;
+
     /**
      * Constructor
      * @param dao dao to use for Users
@@ -32,6 +34,8 @@ public class UserService {
         this.dao = dao;
         this.rdao = rdao;
         this.passwordEncoder = passwordEncoder;
+
+        this.roleResourceName = "Role";
     }
 
 
@@ -44,7 +48,7 @@ public class UserService {
         // check exists
         Optional<Role> role = rdao.findById(dto.getRoleId());
         if (role.isEmpty())
-            throw new SQLDoesNotExistException("Role", String.valueOf(dto.getId()));
+            throw new SQLDoesNotExistException(roleResourceName, String.valueOf(dto.getId()));
 
         // build
         return User.builder()
